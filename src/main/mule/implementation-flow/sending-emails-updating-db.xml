@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:tls="http://www.mulesoft.org/schema/mule/tls" xmlns:email="http://www.mulesoft.org/schema/mule/email"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:servicenow="http://www.mulesoft.org/schema/mule/servicenow" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/servicenow http://www.mulesoft.org/schema/mule/servicenow/current/mule-servicenow.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd
+http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd">
+	<servicenow:config name="ServiceNow_Config" doc:name="ServiceNow Config" doc:id="4ad3d886-2c53-4077-8a27-739883687b7a" >
+		<servicenow:basic-connection username="admin" password="i0Lz/5^VtsWB" serviceAddress="https://dev110643.service-now.com" />
+	</servicenow:config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="295081a2-3125-44ed-a3d6-8604b32e29ee" >
+		<db:generic-connection url="jdbc:postgresql://drona.db.elephantsql.com:5432/ysaqzswb" driverClassName="org.postgresql.Driver" user="ysaqzswb" password="mkHH_DTd78_JUtpOyp2Npf1baREHakv4"/>
+	</db:config>
+	<email:smtp-config name="Email_SMTP" doc:name="Email SMTP" doc:id="bea33036-2d20-4fe4-bba6-e3176123fd16" >
+		<email:smtp-connection host="smtp.gmail.com" port="587" user="khanaab786@gmail.com" password="frslhzljrbsyyssz" >
+			<email:properties >
+				<email:property key="mail.smtp.starttls.enable" value="true" />
+			</email:properties>
+		</email:smtp-connection>
+	</email:smtp-config>
+	<flow name="sending_email_and_updating_db" doc:id="5ec4c2ae-f42d-4e2c-93c8-77badae5c5a3" >
+		<servicenow:new-or-updated-record-listener doc:name="updating_db" doc:id="a54bd12b-1c70-4ae1-aef9-a7557dd6ac30" config-ref="ServiceNow_Config1" displaySystemRefs="ALL" tableName="incident">
+			<scheduling-strategy >
+				<fixed-frequency />
+			</scheduling-strategy>
+		</servicenow:new-or-updated-record-listener>
+		<ee:transform doc:name="transformed_data" doc:id="043ce13a-8daa-43bf-9e0f-b9c00a74c681" >
+			<ee:message >
+				<ee:set-payload resource="data_weave_transform/conditional_transformed.dwl" />
+			</ee:message>
+		</ee:transform>
+		<email:send doc:name="email_to_support" doc:id="85ecec9b-fe53-44e7-8106-5594b57ec901" fromAddress="work-order-management@gmail.com" subject='#["work-order-managemnet content"]' config-ref="GMAIL_CONFIG">
+			<email:to-addresses>
+				<email:to-address value="sharmareems123@gmail.com" />
+			</email:to-addresses>
+			<email:body contentType="text/html" encoding="UTF-8">
+				<email:content><![CDATA[<h1> Greetings from Work-Order-Management.</h1>
+<h2> We have found update on your database. Please, find the attachment below. </h2>]]></email:content>
+			</email:body>
+			<email:attachments ><![CDATA[#[{
+	"Work-Order.xml": payload
+}]]]></email:attachments>
+		</email:send>
+		<choice doc:name="insert/update db" doc:id="c7995e50-3760-4681-82db-efabd5d9f06f" >
+			<when expression='#[payload.state == "New"]'>
+				<db:insert doc:name="Inserting_into_db" doc:id="9f45ad3f-d6b5-41b6-8c64-f2c3c0b7cb31" config-ref="H2_DB_CONFIG">
+					<db:sql ><![CDATA[INSERT INTO w_o_incident (state, active, short_description, description, urgency, impact,severity,caller_id,requestor, equipment_id,sl_no)
+VALUES (:state,:active,:short_description,:description,:urgency,:impact,:severity,:caller_id,:u_requestor,:u_equip_id,:u_sl_no);]]></db:sql>
+					<db:input-parameters ><![CDATA[#[{
+		"state": payload.state,
+		"active": payload.active,
+		"short_description": payload.short_description,
+		"description": payload.description,
+		"urgency": payload.urgency,
+		"impact": payload.impact,
+		"severity": payload.severity,
+		"caller_id": payload.caller_id,
+		"u_requestor": payload.u_requestor,
+		"u_equip_id": payload.u_equip_id,
+		"u_sl_no": payload.u_sl_no	
+}]]]></db:input-parameters>
+				</db:insert>
+			</when>
+			<otherwise >
+				<db:update doc:name="Updating_into_db" doc:id="e2057258-1a5e-4a71-8a2e-36d589bc9f3c" config-ref="H2_DB_CONFIG">
+					<db:sql ><![CDATA[UPDATE w_o_incident
+SET state = :state
+WHERE sl_no = :u_sl_no ;]]></db:sql>
+					<db:input-parameters ><![CDATA[#[{
+	"state": payload.state,
+	"u_sl_no": payload.u_sl_no
+}]]]></db:input-parameters>
+				</db:update>
+			</otherwise>
+		</choice>
+	</flow>
+</mule>

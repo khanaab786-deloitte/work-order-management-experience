@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:tls="http://www.mulesoft.org/schema/mule/tls" xmlns:email="http://www.mulesoft.org/schema/mule/email"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:servicenow="http://www.mulesoft.org/schema/mule/servicenow" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/servicenow http://www.mulesoft.org/schema/mule/servicenow/current/mule-servicenow.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd
+http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd">
+	<flow name="creating_incident" doc:id="88162d79-4e2c-49c1-b099-45e2c975a162" >
+		<ee:transform doc:name="json_to_xml" doc:id="cdea649f-948c-4d81-9a90-7887c0894991" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+ns ns0 http://www.service-now.com/incident
+---
+{
+	ns0#insert: {
+		"state": payload.state,
+		"active": payload.active,
+		"short_description": payload.short_description,
+		"description": payload.description,
+		"urgency": payload.urgency,
+		"impact": payload.impact,
+		"severity": payload.severity,
+		"caller_id": payload.caller_id,
+		"u_requestor": payload.requestor,
+		"u_equip_id": payload.equip_id
+	}
+}]]></ee:set-payload>
+				
+			</ee:message>
+		</ee:transform>
+		<servicenow:invoke doc:id="d2c19da9-301a-47c4-a84a-27f7e2cbec85" config-ref="ServiceNow_Config1" doc:name="inserting_into_snow" service="incident" operation="insert"/>
+		<ee:transform doc:name="xml_to_json" doc:id="34b64190-1cd1-4aa9-b9cc-ff39aa786ca9" >
+			<ee:message >
+				<ee:set-payload resource="data_weave_transform/xml_to_json.dwl" />
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="logging_incident_no" doc:id="ed3988d3-3cfd-44d6-ab7f-209e5ba24802" message="#[payload]"/>
+	</flow>
+</mule>

@@ -1,0 +1,20 @@
+http:
+  port: "8081"
+  api: "/api/*"
+  
+email:
+  host: "smtp.gmail.com"
+  port: "587"
+  user: "khanaab786@gmail.com"
+  password: "frslhzljrbsyyssz"
+  
+snow:
+  username: "admin"
+  password: "i0Lz/5^VtsWB"
+  url: "https://dev110643.service-now.com"
+  
+db:
+  url: "jdbc:postgresql://drona.db.elephantsql.com:5432/ysaqzswb"
+  driver: "org.postgresql.Driver"
+  user: "ysaqzswb"
+  password: "mkHH_DTd78_JUtpOyp2Npf1baREHakv4"

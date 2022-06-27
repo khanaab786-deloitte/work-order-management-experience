@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:servicenow="http://www.mulesoft.org/schema/mule/servicenow"
+	xmlns:email="http://www.mulesoft.org/schema/mule/email"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd 
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd 
+http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/servicenow http://www.mulesoft.org/schema/mule/servicenow/current/mule-servicenow.xsd">
+	    <http:listener-config name="HTTP_CONFIG">
+        <http:listener-connection host="0.0.0.0" port="${http.port}" />
+    </http:listener-config>
+    <apikit:config name="WORK-ORDER-CONFIG" api="resource::31151502-3411-4ebb-97ce-17b716604a33:work-order-management:1.0.0:raml:zip:work-order-management.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" >
+		<apikit:flow-mappings >
+			<apikit:flow-mapping resource="/work-order" action="post" content-type="application/json" flow-ref="creating_incident" />
+		</apikit:flow-mappings>
+	</apikit:config>
+    <db:config name="H2_DB_CONFIG" doc:name="Database Config" doc:id="27e791a4-42a4-463f-97f4-cb9169636fab" >
+		<db:generic-connection url="${db.url}" driverClassName="${db.driver}" user="${db.user}" password="${db.password}"/>
+	</db:config>
+	<email:smtp-config name="GMAIL_CONFIG" doc:name="Email SMTP" doc:id="171ef978-fe6b-47f0-a49c-c43f2b1129fa" >
+		<email:smtp-connection host="${email.host}" port="${email.port}" user="${email.user}" password="${email.password}">
+			<email:properties >
+				<email:property key="mail.smtp.starttls.enable" value="true" />
+			</email:properties>
+		</email:smtp-connection>
+	</email:smtp-config>
+	<servicenow:config name="ServiceNow_Config1" doc:name="ServiceNow Config" doc:id="8562a00e-20d8-4eae-89b2-967ebf321411" >
+		<servicenow:basic-connection username="${snow.username}" password="${snow.password}" serviceAddress="${snow.url}" />
+	</servicenow:config>
+	<configuration-properties doc:name="Configuration properties" doc:id="826bfc7b-0d0e-418d-a603-fc652e1ea193" file="properties/local.yaml" />
+
+	
+</mule>
