@@ -1,0 +1,50 @@
+name: mule-smartfactory-order-management-papi
+on: 
+  push:
+    branches: [ experience ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+        - uses: actions/checkout@v2
+        - name: Cache m2 repositories
+          uses: actions/cache@v2
+          env:
+           cache-name: cache-node-modules
+           anypointUsername: ${{secrets.ANYPOINT_PLATFORM_USER}}
+           anypointPassword: ${{secrets.ANYPOINT_PLATFORM_PASSWORD}}
+           businessGroup: ${{secrets.ANYPOINT_PLATFORM_BUSINESS_GROUPID}}
+           
+          with:
+           # npm cache files are stored in `~/.m2/repository` on Linux/macOS
+            path: ~/.m2/repository
+            key: ${{ runner.os }}-maven-${{ env.cache-name }}-${{ hashFiles('**/pom.xml') }}
+            restore-keys: |
+                ${{ runner.os }}-maven-${{ env.cache-name }}-
+                ${{ runner.os }}-maven-
+                ${{ runner.os }}-
+        - name: Create maven settings.xml
+          uses: whelk-io/maven-settings-xml-action@v5
+          with:
+            servers: '[{"id": "anypoint-exchange", "username": "${{ secrets.ANYPOINT_PLATFORM_USER }}", "password": "${{ secrets.ANYPOINT_PLATFORM_PASSWORD }}" }]'
+            repositories: '[{"id": "anypoint-exchange", "url": "https://maven.anypoint.mulesoft.com/api/v2/maven"},{"id": "mulesoft-releases", "url": "https://repository.mulesoft.org/releases/"}]' 
+          env:
+           cache-name: cache-node-modules
+           anypointUsername: ${{secrets.ANYPOINT_PLATFORM_USER}}
+           anypointPassword: ${{secrets.ANYPOINT_PLATFORM_PASSWORD}}
+           businessGroup: ${{secrets.ANYPOINT_PLATFORM_BUSINESS_GROUPID}}
+        - run: |
+            cat ~/.m2/settings.xml
+        - name: Set up JDK 1.8 version
+          uses: actions/setup-java@v1
+          with:
+            java-version: 1.8
+            path: ~/.m2/repository
+            settings-path: ${{ github.workspace }} # location for the settings.xml file
+        - name: Build and cloudhub deployment
+          run: mvn clean package deploy -DskipTests -DmuleDeploy -Danypoint.environment=${{secrets.ANYPOINT_PLATFORM_ENVIRONMENT}} -Danypoint.platform.client_id=${{secrets.ANYPOINT_PLATFORM_CLIENT_ID}} -Danypoint.platform.client_secret=${{secrets.ANYPOINT_PLATFORM_CLIENT_SECRET}} -Danypoint.businessgroup.id=${{secrets.ANYPOINT_PLATFORM_BUSINESS_GROUPID}} -Dapplication_name=${{secrets.ANYPOINT_APPLICATION_NAME}} -Dch.region=${{secrets.REGION}} -Dch.workers=${{secrets.WORKERS}} -Dch.workerType=${{secrets.WORKER_TYPE}} -Dmule.env=${{secrets.ANYPOINT_MULE_ENVIRONMENT}}
+          env:
+           cache-name: cache-node-modules
+           anypointUsername: ${{secrets.ANYPOINT_PLATFORM_USER}}
+           anypointPassword: ${{secrets.ANYPOINT_PLATFORM_PASSWORD}}
+           businessGroup: ${{secrets.ANYPOINT_PLATFORM_BUSINESS_GROUPID}}
