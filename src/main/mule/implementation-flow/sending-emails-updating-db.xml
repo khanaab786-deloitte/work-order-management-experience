@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:tls="http://www.mulesoft.org/schema/mule/tls" xmlns:email="http://www.mulesoft.org/schema/mule/email"
-	xmlns:db="http://www.mulesoft.org/schema/mule/db"
-	xmlns:servicenow="http://www.mulesoft.org/schema/mule/servicenow" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
+	xmlns:email="http://www.mulesoft.org/schema/mule/email"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:servicenow="http://www.mulesoft.org/schema/mule/servicenow" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
 http://www.mulesoft.org/schema/mule/servicenow http://www.mulesoft.org/schema/mule/servicenow/current/mule-servicenow.xsd
 http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
 http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd
-http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd">
-	<servicenow:config name="ServiceNow_Config" doc:name="ServiceNow Config" doc:id="4ad3d886-2c53-4077-8a27-739883687b7a" >
-		<servicenow:basic-connection username="admin" password="i0Lz/5^VtsWB" serviceAddress="https://dev110643.service-now.com" />
-	</servicenow:config>
+http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+
 	<db:config name="Database_Config" doc:name="Database Config" doc:id="295081a2-3125-44ed-a3d6-8604b32e29ee" >
 		<db:generic-connection url="jdbc:postgresql://drona.db.elephantsql.com:5432/ysaqzswb" driverClassName="org.postgresql.Driver" user="ysaqzswb" password="mkHH_DTd78_JUtpOyp2Npf1baREHakv4"/>
 	</db:config>
@@ -21,8 +20,11 @@ http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/
 			</email:properties>
 		</email:smtp-connection>
 	</email:smtp-config>
+	<servicenow:config name="ServiceNow_Config" doc:name="ServiceNow Config" doc:id="5775ddb5-b515-45a9-8b1c-185cad6a15d8" >
+		<servicenow:basic-connection username="admin" password="i0Lz/5^VtsWB" serviceAddress="https://dev110643.service-now.com" />
+	</servicenow:config>
 	<flow name="sending_email_and_updating_db" doc:id="5ec4c2ae-f42d-4e2c-93c8-77badae5c5a3" >
-		<servicenow:new-or-updated-record-listener doc:name="updating_db" doc:id="a54bd12b-1c70-4ae1-aef9-a7557dd6ac30" config-ref="ServiceNow_Config1" displaySystemRefs="ALL" tableName="incident">
+		<servicenow:new-or-updated-record-listener doc:name="On New/Updated Record" doc:id="9091c4b4-a8af-46af-a51f-7d2e6a1f8970" config-ref="ServiceNow_Config" displaySystemRefs="ALL" tableName="incident">
 			<scheduling-strategy >
 				<fixed-frequency />
 			</scheduling-strategy>
