@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="97f84531-ef6d-46c8-878d-2831c0f3339a" >
+		<http:request-connection host="work-order-management-process.us-e2.cloudhub.io" />
+	</http:request-config>
+	<flow name="data-snowFlow" doc:id="d9c3da6e-f4ab-44bb-a681-1317ee305d5b" >
+		<logger level="INFO" doc:name="Logging incoming data" doc:id="b0d414b7-aa01-470d-8e40-8ff4a5f7ea33" message="#[payload]"/>
+		<http:request method="POST" doc:name="Request" doc:id="88ba8b71-2cc2-471c-9f09-87c29cb96321" config-ref="HTTP_Request_configuration" path="/work-order-process"/>
+	</flow>
+</mule>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+	<flow name="checking-connection" doc:id="3ebb722a-0dad-43fb-9343-9fa0cbfc6449" >
+		<logger level="INFO" doc:name="logging connection status" doc:id="40b091aa-81f2-4537-8dac-d301f7608f24" message='"connection"'/>
+	</flow>
+</mule>
