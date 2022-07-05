@@ -29,12 +29,13 @@ output application/json
 		"impact": payload.impact,
 		"severity": payload.severity,
 		"caller_id": payload.caller_id,
-		"u_requestor": payload.requestor,
-		"u_equip_id": payload.equipment_id
+		"requestor": payload.requestor,
+		"equipment_id": payload.equipment_id
 	
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="78f9bf9a-f6ad-4838-802d-b141c386b65f" message="#[payload]"/>
 		<http:request method="POST" doc:name="Request" doc:id="3579d402-a79f-44fe-bab1-9daa5d033f45" config-ref="HTTP_Request_configuration1" path="/api/work-order"/>
 	</flow>
 </mule>
