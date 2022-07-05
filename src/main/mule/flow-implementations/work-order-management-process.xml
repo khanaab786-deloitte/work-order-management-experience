@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="73b8267f-9bbf-4a19-8736-0acc74488f50" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="da8c8602-2ef4-43ae-9612-7d52ff960be9" >
+		<http:request-connection host="work-order-management-experience.us-e2.cloudhub.io"/>
+	</http:request-config>
+	<http:request-config name="HTTP_Request_configuration1" doc:name="HTTP Request configuration" doc:id="cd16f473-cebc-4105-99e2-d2e09fca84d3" >
+		<http:request-connection host="work-order-management-system.us-e2.cloudhub.io" />
+	</http:request-config>
+	<flow name="work-order-management-processFlow" doc:id="abe0b31a-8569-4156-a044-21aab1d0ad1c" >
+		<ee:transform doc:name="refine data" doc:id="54389f89-5489-4d2e-b05b-0fd91d5eaac6" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+		"state": payload.state,
+		"active": payload.active,
+		"short_description": payload.short_description,
+		"description": payload.description,
+		"urgency": payload.urgency,
+		"impact": payload.impact,
+		"severity": payload.severity,
+		"caller_id": payload.caller_id,
+		"u_requestor": payload.requestor,
+		"u_equip_id": payload.equipment_id
+	
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<http:request method="POST" doc:name="Request" doc:id="3579d402-a79f-44fe-bab1-9daa5d033f45" config-ref="HTTP_Request_configuration1" path="/api/work-order"/>
+	</flow>
+</mule>

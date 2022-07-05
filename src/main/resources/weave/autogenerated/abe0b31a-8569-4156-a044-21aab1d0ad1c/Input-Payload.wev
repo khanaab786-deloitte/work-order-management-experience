@@ -1,0 +1,16 @@
+%dw 2.0
+
+type auto_abe0b31a_8569_4156_a044_21aab1d0ad1c_Input_Payload = {
+  severity: String, 
+  short_description: String, 
+  urgency: String, 
+  caller_id: String, 
+  impact: String, 
+  description: String, 
+  active: Boolean, 
+  state: String, 
+  requestor: String, 
+  equipment_id: Number, 
+  _?: Any
+}
+
