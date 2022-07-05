@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.mycompany</groupId>
-	<artifactId>work_order_management</artifactId>
+	<artifactId>work-order-management-system</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>mule-application</packaging>
 
@@ -44,6 +44,19 @@
 					</sharedLibraries>
 
 					<classifier>mule-application</classifier>
+					<cloudHubDeployment>
+						<uri>https://anypoint.mulesoft.com</uri>
+						<muleVersion>4.4.0</muleVersion>
+						<username>${env.anypointUsername}</username>
+						<password>${env.anypointPassword}</password>
+						<applicationName>${project.name}</applicationName>
+						<environment>Sandbox</environment>
+						<workerType>MICRO</workerType>
+						<region>us-east-2</region>
+						<workers>1</workers>
+						<objectStoreV2>true</objectStoreV2>
+						<businessGroup>${env.businessGroup}</businessGroup>
+					</cloudHubDeployment>
 
 				</configuration>
 
