@@ -9,6 +9,6 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 	</http:request-config>
 	<flow name="data-snowFlow" doc:id="d9c3da6e-f4ab-44bb-a681-1317ee305d5b" >
 		<logger level="INFO" doc:name="Logging incoming data" doc:id="b0d414b7-aa01-470d-8e40-8ff4a5f7ea33" message="#[payload]"/>
-		<http:request method="POST" doc:name="Request" doc:id="88ba8b71-2cc2-471c-9f09-87c29cb96321" config-ref="HTTP_Request_configuration" path="/api/work-order"/>
+		<http:request method="POST" doc:name="reference-to-process-api" doc:id="88ba8b71-2cc2-471c-9f09-87c29cb96321" config-ref="HTTP_Request_configuration" path="/api/work-order"/>
 	</flow>
 </mule>

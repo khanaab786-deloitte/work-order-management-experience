@@ -123,7 +123,7 @@ output application/json
             </on-error-propagate>
         </error-handler>
     </flow>
-    <flow name="get:\ping:work-order-management-config">
+    <flow name="ping-endpoint">
         <ee:transform doc:name="Transform Message" doc:id="a6f6edda-5d8d-49bf-8293-cc8f99b3dbef">
             <ee:message>
                 <ee:set-payload><![CDATA[%dw 2.0
@@ -132,9 +132,9 @@ output application/json
 "connection successful!"]]></ee:set-payload>
             </ee:message>
         </ee:transform>
-        <flow-ref doc:name="Flow Reference" doc:id="aa55d318-0701-41b4-a3f2-f11a41dcaee3" name="checking-connection" />
+        <flow-ref doc:name="reference-to-connection-xml" doc:id="aa55d318-0701-41b4-a3f2-f11a41dcaee3" name="checking-connection" />
     </flow>
-    <flow name="post:\work-order:application\json:work-order-management-config">
-        <flow-ref doc:name="reference to data-snow" doc:id="aa73b502-3d71-4125-a94b-cfdb742ac3c2" name="data-snowFlow" />
+    <flow name="post-endpoint">
+        <flow-ref doc:name="referenc-to-data-snow" doc:id="aa73b502-3d71-4125-a94b-cfdb742ac3c2" name="data-snowFlow" />
     </flow>
 </mule>
