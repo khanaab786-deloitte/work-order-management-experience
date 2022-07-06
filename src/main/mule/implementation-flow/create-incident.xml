@@ -10,30 +10,12 @@ http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/em
 http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
 	<flow name="creating_incident" doc:id="88162d79-4e2c-49c1-b099-45e2c975a162" >
-		<logger level="INFO" doc:name="Logger" doc:id="b9d72cc1-19c9-4c17-9d78-1f5a86666c1e" message="#[payload]"/>
-		<ee:transform doc:name="Transform Message" doc:id="c0fd979d-bb0d-456a-8512-d616e7f120c4" >
+		<ee:transform doc:name="json_to_xml" doc:id="c0fd979d-bb0d-456a-8512-d616e7f120c4" >
 			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
-output application/xml
-ns ns0 http://www.service-now.com/incident
----
-{
-	ns0#insert: {
-		"state": payload.state,
-		"active": payload.active,
-		"short_description": payload.short_description,
-		"description": payload.description,
-		"urgency": payload.urgency,
-		"impact": payload.impact,
-		"severity": payload.severity,
-		"caller_id": payload.caller_id,
-		"u_requestor": payload.requestor,
-		"u_equip_id": payload.equipment_id
-	}
-}]]></ee:set-payload>
+				<ee:set-payload resource="data_weave_transform/json_to_xml.dwl" />
 			</ee:message>
 		</ee:transform>
-		<servicenow:invoke doc:name="Invoke" doc:id="dfff1587-2cd3-4817-bcb2-6595be1038a7" config-ref="ServiceNow_Config" service="incident" operation="insert" showReferenceValues="ALL"/>
+		<servicenow:invoke doc:name="Service-now-invoke" doc:id="dfff1587-2cd3-4817-bcb2-6595be1038a7" config-ref="SNOW_CONFIG" service="incident" operation="insert" showReferenceValues="ALL"/>
 		<ee:transform doc:name="xml_to_json" doc:id="34b64190-1cd1-4aa9-b9cc-ff39aa786ca9" >
 			<ee:message >
 				<ee:set-payload resource="data_weave_transform/xml_to_json.dwl" />

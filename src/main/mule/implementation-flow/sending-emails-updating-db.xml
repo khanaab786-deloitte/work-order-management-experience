@@ -10,28 +10,17 @@ http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/em
 http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
 
-	<db:config name="Database_Config" doc:name="Database Config" doc:id="295081a2-3125-44ed-a3d6-8604b32e29ee" >
-		<db:generic-connection url="jdbc:postgresql://drona.db.elephantsql.com:5432/ysaqzswb" driverClassName="org.postgresql.Driver" user="ysaqzswb" password="mkHH_DTd78_JUtpOyp2Npf1baREHakv4"/>
-	</db:config>
-	<email:smtp-config name="Email_SMTP" doc:name="Email SMTP" doc:id="bea33036-2d20-4fe4-bba6-e3176123fd16" >
-		<email:smtp-connection host="smtp.gmail.com" port="587" user="khanaab786@gmail.com" password="frslhzljrbsyyssz" >
-			<email:properties >
-				<email:property key="mail.smtp.starttls.enable" value="true" />
-			</email:properties>
-		</email:smtp-connection>
-	</email:smtp-config>
-	<servicenow:config name="ServiceNow_Config" doc:name="ServiceNow Config" doc:id="5775ddb5-b515-45a9-8b1c-185cad6a15d8" >
-		<servicenow:basic-connection username="admin" password="i0Lz/5^VtsWB" serviceAddress="https://dev110643.service-now.com" />
-	</servicenow:config>
 	<flow name="sending_email_and_updating_db" doc:id="5ec4c2ae-f42d-4e2c-93c8-77badae5c5a3" >
-		<servicenow:new-or-updated-record-listener doc:name="On New/Updated Record" doc:id="9091c4b4-a8af-46af-a51f-7d2e6a1f8970" config-ref="ServiceNow_Config" displaySystemRefs="ALL" tableName="incident">
+		<servicenow:new-or-updated-record-listener doc:name="new/update records" doc:id="9091c4b4-a8af-46af-a51f-7d2e6a1f8970" config-ref="SNOW_CONFIG" displaySystemRefs="ALL" tableName="incident">
 			<scheduling-strategy >
 				<fixed-frequency />
 			</scheduling-strategy>
 		</servicenow:new-or-updated-record-listener>
-		<ee:transform doc:name="transformed_data" doc:id="043ce13a-8daa-43bf-9e0f-b9c00a74c681" >
+		<logger level="INFO" doc:name="Logging_incoming_data" doc:id="4c2cd5e0-661d-4dce-8052-bd27d430c11e" message="#[payload]"/>
+		<ee:transform doc:name="processed_data" doc:id="729ab61c-4a53-456e-8022-4a5b7a97a730" >
 			<ee:message >
-				<ee:set-payload resource="data_weave_transform/conditional_transformed.dwl" />
+				<ee:set-payload resource="data_weave_transform/processed_data.dwl" />
+				<ee:set-attributes resource="data_weave_transform/processed_data.dwl" />
 			</ee:message>
 		</ee:transform>
 		<email:send doc:name="email_to_support" doc:id="85ecec9b-fe53-44e7-8106-5594b57ec901" fromAddress="work-order-management@gmail.com" subject='#["work-order-managemnet content"]' config-ref="GMAIL_CONFIG">

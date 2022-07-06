@@ -25,6 +25,14 @@ http://www.mulesoft.org/schema/mule/servicenow http://www.mulesoft.org/schema/mu
 			</email:properties>
 		</email:smtp-connection>
 	</email:smtp-config>
+		<servicenow:config name="SNOW_CONFIG" doc:name="ServiceNow Config" doc:id="20ec1c3d-7741-4048-927b-6965f4be72ca" >
+		<servicenow:basic-connection username="${snow.username}" password="${snow.password}" serviceAddress="${snow.url}" />
+	</servicenow:config>
+	  <apikit:config name="ROUTER_CONFIG" api="resource::31151502-3411-4ebb-97ce-17b716604a33:work-order-management:1.0.2:raml:zip:work-order-management.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" >
+		<apikit:flow-mappings >
+			<apikit:flow-mapping resource="/work-order" action="post" content-type="application/json" flow-ref="creating_incident" />
+		</apikit:flow-mappings>
+	</apikit:config>
 	<configuration-properties doc:name="Configuration properties" doc:id="826bfc7b-0d0e-418d-a603-fc652e1ea193" file="properties/local.yaml" />
 
 	

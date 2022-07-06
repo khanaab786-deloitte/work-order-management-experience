@@ -10,8 +10,8 @@ email:
   
 snow:
   username: "admin"
-  password: "v@YpM%77PrCo"
-  url: "https://dev121639.service-now.com"
+  password: "i0Lz/5^VtsWB"
+  url: "https://dev110643.service-now.com"
   
 db:
   url: "jdbc:postgresql://drona.db.elephantsql.com:5432/ysaqzswb"

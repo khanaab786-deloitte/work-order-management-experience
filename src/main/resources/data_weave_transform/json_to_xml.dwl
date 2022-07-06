@@ -13,6 +13,6 @@ ns ns0 http://www.service-now.com/incident
 		"severity": payload.severity,
 		"caller_id": payload.caller_id,
 		"u_requestor": payload.requestor,
-		"u_equip_id": payload.equip_id
+		"u_equip_id": payload.equipment_id
 	}
 }
