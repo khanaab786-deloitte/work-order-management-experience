@@ -10,7 +10,7 @@ output application/json
 		"impact": payload.impact,
 		"severity": payload.severity,
 		"caller_id": payload.caller_id,
-		"u_requestor": payload.requestor,
-		"u_equip_id": payload.equipment_id
+		"requestor": payload.requestor,
+		"equipment_id": payload.equipment_id
 	
 }

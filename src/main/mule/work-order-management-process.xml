@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mule xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
-    <apikit:config name="work-order-management-config" api="resource::31151502-3411-4ebb-97ce-17b716604a33:work-order-management:1.0.2:raml:zip:work-order-management.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
-    <flow name="work-order-management-main">
-        <http:listener config-ref="HTTP_Listener_config" path="/api/*">
+    <http:listener-config name="work-order-management-process-httpListenerConfig">
+        <http:listener-connection host="0.0.0.0" port="8081" />
+    </http:listener-config>
+    <apikit:config name="work-order-management-process-config" api="resource::31151502-3411-4ebb-97ce-17b716604a33:work-order-management-process:1.0.0:raml:zip:work-order-management-process.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <flow name="work-order-management-process-main">
+        <http:listener config-ref="work-order-management-process-httpListenerConfig" path="/api/*">
             <http:response statusCode="#[vars.httpStatus default 200]">
                 <http:headers>#[vars.outboundHeaders default {}]</http:headers>
             </http:response>
@@ -11,7 +14,7 @@
                 <http:headers>#[vars.outboundHeaders default {}]</http:headers>
             </http:error-response>
         </http:listener>
-        <apikit:router config-ref="work-order-management-config" />
+        <apikit:router config-ref="work-order-management-process-config" />
         <error-handler>
             <on-error-propagate type="APIKIT:BAD_REQUEST">
                 <ee:transform>
@@ -93,8 +96,8 @@ output application/json
             </on-error-propagate>
         </error-handler>
     </flow>
-    <flow name="work-order-management-console">
-        <http:listener config-ref="HTTP_Listener_config" path="/console/*">
+    <flow name="work-order-management-process-console">
+        <http:listener config-ref="work-order-management-process-httpListenerConfig" path="/console/*">
             <http:response statusCode="#[vars.httpStatus default 200]">
                 <http:headers>#[vars.outboundHeaders default {}]</http:headers>
             </http:response>
@@ -103,7 +106,7 @@ output application/json
                 <http:headers>#[vars.outboundHeaders default {}]</http:headers>
             </http:error-response>
         </http:listener>
-        <apikit:console config-ref="work-order-management-config" />
+        <apikit:console config-ref="work-order-management-process-config" />
         <error-handler>
             <on-error-propagate type="APIKIT:NOT_FOUND">
                 <ee:transform>
@@ -120,17 +123,7 @@ output application/json
             </on-error-propagate>
         </error-handler>
     </flow>
-    <flow name="get:\ping:work-order-management-config">
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-"connected successfully!"]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
-    </flow>
-    <flow name="post:\work-order:application\json:work-order-management-config">
-		<flow-ref doc:name="Flow Reference" doc:id="c4ed4e7e-187f-4d6a-9902-7a7e763bdd64" name="work-order-management-processFlow"/>
+    <flow name="post:\work-order-process:application\json:work-order-management-process-config">
+		<flow-ref doc:name="Flow Reference" doc:id="43646a66-be29-46d9-8028-c23729ad2411" name="work-order-management-processFlow"/>
     </flow>
 </mule>
